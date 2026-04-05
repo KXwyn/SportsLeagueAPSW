@@ -20,6 +20,10 @@ namespace SportsLeague.DataAccess.Context
 
         public DbSet<Player> Players => Set<Player>();
 
+        public DbSet<Sponsor> Sponsors => Set<Sponsor>();
+
+        public DbSet<TournamentSponsor> TournamentSponsors => Set<TournamentSponsor>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -188,7 +192,37 @@ namespace SportsLeague.DataAccess.Context
 
             });
 
+            // ── Sponsor Configuration ──
+            modelBuilder.Entity<Sponsor>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.Property(s => s.Name).IsRequired().HasMaxLength(100);
+                entity.Property(s => s.ContactEmail).IsRequired().HasMaxLength(150);
 
+                // Índice único para el nombre para evitar duplicados
+                entity.HasIndex(s => s.Name).IsUnique();
+            });
+
+            // ── TournamentSponsor ──
+            modelBuilder.Entity<TournamentSponsor>(entity =>
+            {
+                entity.HasKey(ts => ts.Id);
+
+                // Relación con Tournament
+                entity.HasOne(ts => ts.Tournament)
+                      .WithMany(t => t.TournamentSponsors)
+                      .HasForeignKey(ts => ts.TournamentId);
+
+                // Relación con Sponsor
+                entity.HasOne(ts => ts.Sponsor)
+                      .WithMany(s => s.TournamentSponsors)
+                      .HasForeignKey(ts => ts.SponsorId);
+
+                entity.Property(ts => ts.ContractAmount).HasColumnType("decimal(18,2)");
+
+                // Índice único compuesto para evitar que un sponsor se vincule dos veces al mismo torneo
+                entity.HasIndex(ts => new { ts.TournamentId, ts.SponsorId }).IsUnique();
+            });
         }
 
     }
