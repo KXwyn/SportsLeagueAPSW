@@ -15,12 +15,17 @@ namespace SportsLeague.Domain.Entities
 
         //public string Phase { get; set; } = string.Empty; // Example: "Group Stage", "Quarterfinals", "Semifinals", "Final" (Propuesta del compañero)
 
-
         // Navigation Properties
         public Tournament Tournament { get; set; } = null!;
         public Team HomeTeam { get; set; } = null!;
         public Team AwayTeam { get; set; } = null!;
         public Referee Referee { get; set; } = null!;
-    }
+        
+        // Relación 1:1 con resultado
+        public MatchResult? MatchResult { get; set; }
 
+        // Relación 1:N con goles y tarjetas
+        public ICollection<Goal> Goals { get; set; } = new List<Goal>();
+        public ICollection<Card> Cards { get; set; } = new List<Card>();
+    }
 }
