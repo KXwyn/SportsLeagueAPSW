@@ -10,5 +10,8 @@
 
         public string Nationality { get; set; } = string.Empty;
 
+        //Navigation Property - Colección de partidos arbitrados
+        public ICollection<Match> Matches { get; set; } = new List<Match>();
+    
     }
 }
