@@ -8,7 +8,7 @@
         public DateTime JoinedAt { get; set; }
 
         // Navigation Properties
-        public virtual Tournament Tournament { get; set; } = null!;
-        public virtual Sponsor Sponsor { get; set; } = null!;
+        public Tournament Tournament { get; set; } = null!;
+        public Sponsor Sponsor { get; set; } = null!;
     }
 }
