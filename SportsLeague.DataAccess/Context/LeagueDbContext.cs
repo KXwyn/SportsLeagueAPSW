@@ -6,7 +6,6 @@ namespace SportsLeague.DataAccess.Context
     public class LeagueDbContext : DbContext
 
     {
-
         public LeagueDbContext(DbContextOptions<LeagueDbContext> options)
 
         : base(options)
@@ -26,8 +25,7 @@ namespace SportsLeague.DataAccess.Context
         public DbSet<MatchResult> MatchResults => Set<MatchResult>();
         public DbSet<Goal> Goals => Set<Goal>();
         public DbSet<Card> Cards => Set<Card>();
-
-
+        public DbSet<MatchLineup> MatchLineups => Set<MatchLineup>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -328,6 +326,26 @@ namespace SportsLeague.DataAccess.Context
                       .WithMany(p => p.Cards)
                       .HasForeignKey(c => c.PlayerId)
                       .OnDelete(DeleteBehavior.Restrict);
+            });
+            
+            // ── MatchLineup Configuration ──
+            modelBuilder.Entity<MatchLineup>(entity =>
+            {
+                entity.HasKey(ml => ml.Id);
+                entity.Property(ml => ml.Position).IsRequired();
+
+                entity.HasOne(ml => ml.Match)
+                      .WithMany(m => m.Lineups)
+                      .HasForeignKey(ml => ml.MatchId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(ml => ml.Player)
+                      .WithMany(p => p.Lineups)
+                      .HasForeignKey(ml => ml.PlayerId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(ml => new { ml.MatchId, ml.PlayerId }).IsUnique();
+                //Garantiza que un jugador solo esté en el once inicial de un partido una vez
             });
 
         }
